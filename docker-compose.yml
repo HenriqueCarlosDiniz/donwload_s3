@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   s3_downloader:
     # Constrói a imagem a partir do Dockerfile no diretório atual (.)
@@ -35,8 +33,10 @@ services:
     # Conecta este serviço à rede customizada
     networks:
       - s3_net
-    command: ["sleep", "infinity"]
 
+    # --- NOVA LINHA ---
+    # Mantém o container rodando (e ocioso) para que possamos "entrar" nele
+    command: ["sleep", "infinity"]
 
   # --- Novo Serviço: Banco de Dados MySQL ---
   mysql:
