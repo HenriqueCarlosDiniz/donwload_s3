@@ -22,9 +22,17 @@ COPY --from=builder /app/vendor /app/vendor
 # Copia o nosso script PHP
 COPY download.php .
 
+# --- Instala extensões PHP necessárias ---
+# Precisamos da extensão mysqli para conectar ao MySQL
+RUN docker-php-ext-install mysqli
+
 # Cria o diretório de downloads dentro do container.
 # O docker-compose irá montar um volume nesta pasta.
 RUN mkdir -p /app/downloads
 
+COPY --from=builder /app/vendor /app/vendor
+COPY download.php /app/download.php
+
 # Comando padrão que será executado quando o container iniciar
-CMD ["php", "download.php"]
+# CMD ["php", "download.php"]
+

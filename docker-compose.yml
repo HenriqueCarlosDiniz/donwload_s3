@@ -13,9 +13,60 @@ services:
     # Define o caminho de download fixo DENTRO do container
     environment:
       - DOWNLOAD_PATH=/app/downloads
+      # Passa as variáveis do .env para o container
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      # Nova variável para palavras-chave
+      - S3_KEYWORDS=${S3_KEYWORDS}
 
     # Monta um volume:
     # Mapeia a pasta './meus_downloads' (no seu PC)
     # para a pasta '/app/downloads' (dentro do container)
     volumes:
       - ./meus_downloads:/app/downloads
+
+    # Garante que o serviço de banco de dados inicie antes
+    depends_on:
+      - mysql
+
+    # Conecta este serviço à rede customizada
+    networks:
+      - s3_net
+    command: ["sleep", "infinity"]
+
+
+  # --- Novo Serviço: Banco de Dados MySQL ---
+  mysql:
+    image: mysql:8.0
+    container_name: s3_mysql_db
+    # Reinicia o container se ele parar
+    restart: unless-stopped
+    env_file: .env
+    # Mapeia as variáveis do .env para as variáveis esperadas pela imagem do MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      # Expõe a porta do DB para o host (opcional, para debug)
+      - "33060:3306"
+    volumes:
+      # Persiste os dados do banco na pasta './mysql_data' no seu PC
+      - ./mysql_data:/var/lib/mysql
+    # Conecta este serviço à rede customizada
+    networks:
+      - s3_net
+
+# --- Define a rede customizada ---
+# Isso permite que os containers se encontrem pelo nome (ex: 'mysql')
+networks:
+  s3_net:
+    driver: bridge
+
+# --- Define os volumes nomeados (se não usarmos bind mounts) ---
+# (Neste caso, estamos usando bind mounts: ./mysql_data)
+
