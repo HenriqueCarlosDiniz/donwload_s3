@@ -1,0 +1,14 @@
+{
+    "description": "Script para download em lote do S3",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "aws/aws-sdk-php": "^3.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.3"
+        }
+    }
+}

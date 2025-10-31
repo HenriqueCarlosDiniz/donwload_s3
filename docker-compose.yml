@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  s3_downloader:
+    # Constrói a imagem a partir do Dockerfile no diretório atual (.)
+    build: .
+    image: s3-downloader-php:latest
+    container_name: s3_downloader_app
+
+    # Carrega as variáveis de ambiente do arquivo .env
+    env_file: .env
+
+    # Define o caminho de download fixo DENTRO do container
+    environment:
+      - DOWNLOAD_PATH=/app/downloads
+
+    # Monta um volume:
+    # Mapeia a pasta './meus_downloads' (no seu PC)
+    # para a pasta '/app/downloads' (dentro do container)
+    volumes:
+      - ./meus_downloads:/app/downloads
